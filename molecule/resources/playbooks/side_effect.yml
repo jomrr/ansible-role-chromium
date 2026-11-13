@@ -1,0 +1,41 @@
+---
+# role: chromium
+# file: molecule/resources/playbooks/side_effect.yml
+
+- name: CHROMIUM | Verify clearing policies and overriding the policy directory
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: CHROMIUM | Clear previously deployed policies
+      ansible.builtin.include_role:
+        name: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}"
+      vars:
+        chromium_policies: {}
+
+    - name: CHROMIUM | Read the cleared policy file
+      ansible.builtin.slurp:
+        src: "{{ __chromium_expected_policy_dirs[ansible_facts.distribution] }}/ansible.json"
+      register: __chromium_cleared
+
+    - name: CHROMIUM | Verify the file no longer enforces policies
+      ansible.builtin.assert:
+        that:
+          - __chromium_cleared.content | b64decode | from_json == {}
+        quiet: true
+
+    - name: CHROMIUM | Configure a custom browser policy directory
+      ansible.builtin.include_role:
+        name: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}"
+      vars:
+        chromium_policy_dir: /etc/chromium-custom/policies/managed
+
+    - name: CHROMIUM | Read policies from the overridden directory
+      ansible.builtin.slurp:
+        src: /etc/chromium-custom/policies/managed/ansible.json
+      register: __chromium_custom
+
+    - name: CHROMIUM | Verify policies were written to the overridden directory
+      ansible.builtin.assert:
+        that:
+          - __chromium_custom.content | b64decode | from_json == chromium_policies
+        quiet: true

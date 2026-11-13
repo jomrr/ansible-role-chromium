@@ -1,0 +1,33 @@
+---
+# role: chromium
+# file: tasks/main.yml
+
+- name: CHROMIUM | Load platform settings
+  ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', __chromium_platform_files) }}"
+  vars:
+    __chromium_platform_files:
+      files:
+        - "{{ ansible_facts.distribution }}.yml"
+        - "{{ ansible_facts.os_family }}.yml"
+      paths:
+        - "{{ role_path }}/vars"
+
+- name: CHROMIUM | Create the system-wide policy directory
+  become: true
+  become_user: root
+  ansible.builtin.file:
+    path: "{{ chromium_policy_dir | default(__chromium_policy_dir, true) }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: CHROMIUM | Configure system-wide browser policies
+  become: true
+  become_user: root
+  ansible.builtin.template:
+    src: policies.json.j2
+    dest: "{{ chromium_policy_dir | default(__chromium_policy_dir, true) }}/ansible.json"
+    owner: root
+    group: root
+    mode: "0644"

@@ -1,0 +1,58 @@
+---
+# role: chromium
+# file: molecule/resources/playbooks/verify.yml
+
+- name: CHROMIUM | Verify system-wide policies
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: CHROMIUM | Read deployed policies from the browser policy directory
+      ansible.builtin.slurp:
+        src: "{{ __chromium_expected_policy_dirs[ansible_facts.distribution] }}/ansible.json"
+      register: __chromium_policy_file
+
+    - name: CHROMIUM | Verify exact JSON values and removal of outdated policies
+      ansible.builtin.assert:
+        that:
+          - __chromium_policy_file.content | b64decode | from_json == chromium_policies
+        quiet: true
+
+    - name: CHROMIUM | Inspect policy access permissions
+      ansible.builtin.stat:
+        path: "{{ __chromium_expected_policy_dirs[ansible_facts.distribution] }}{{ __chromium_entry.path }}"
+      loop:
+        - path: ""
+          mode: "0755"
+        - path: /ansible.json
+          mode: "0644"
+      loop_control:
+        loop_var: __chromium_entry
+        label: "{{ __chromium_entry.path }}"
+      register: __chromium_permissions
+
+    - name: CHROMIUM | Verify root ownership and browser access
+      ansible.builtin.assert:
+        that:
+          - __chromium_permission.stat.uid == 0
+          - __chromium_permission.stat.gid == 0
+          - __chromium_permission.stat.mode == __chromium_permission.__chromium_entry.mode
+        quiet: true
+      loop: "{{ __chromium_permissions.results }}"
+      loop_control:
+        loop_var: __chromium_permission
+        label: "{{ __chromium_permission.stat.path }}"
+
+    - name: CHROMIUM | Read the independently managed file on Debian
+      become: true
+      become_user: root
+      ansible.builtin.slurp:
+        src: /etc/chromium/policies/managed/independent.json
+      register: __chromium_independent
+      when: ansible_facts.distribution == 'Debian'
+
+    - name: CHROMIUM | Verify independently managed policies are preserved
+      ansible.builtin.assert:
+        that:
+          - "__chromium_independent.content | b64decode | from_json == {'ShowHomeButton': true}"
+        quiet: true
+      when: ansible_facts.distribution == 'Debian'

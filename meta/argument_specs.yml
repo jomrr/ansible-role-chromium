@@ -1,0 +1,24 @@
+---
+# role: chromium
+# file: meta/argument_specs.yml
+
+argument_specs:
+  main:
+    short_description: Configure mandatory Chromium policies for all browser users.
+    options:
+      chromium_policies:
+        type: dict
+        default: {}
+        description:
+          - Chromium policy names mapped to their JSON-compatible values.
+          - The dictionary replaces the contents of ansible.json; an empty dictionary clears
+            its policies.
+          - Other policy files are preserved.
+      chromium_policy_dir:
+        type: path
+        default: null
+        description:
+          - Absolute directory in which ansible.json is managed; null selects the platform
+            default.
+          - Uses /etc/chromium-browser/policies/managed on Ubuntu and /etc/chromium/policies/managed
+            on other supported platforms.

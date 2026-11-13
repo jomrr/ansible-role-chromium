@@ -1,0 +1,5 @@
+---
+# role: chromium
+# file: vars/Suse.yml
+
+__chromium_policy_dir: /etc/chromium/policies/managed

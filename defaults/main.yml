@@ -1,0 +1,859 @@
+---
+# role: chromium
+# file: defaults/main.yml
+
+# Mandatory Chromium policies written as a complete JSON object.
+chromium_policies: {}
+# Security policy examples, reviewed against Linux Chromium 157.0.8103.78 and
+# Google's policy templates 157.0.8103.79. Select settings for the deployment;
+# the restrictive sections can disable applications and are not enabled here.
+# Older distribution packages require checking each policy's supported versions.
+# Build flags, API keys and service availability can limit supported features.
+# Numeric choices are specific to each policy; integers are not booleans.
+# An omitted policy can behave differently from an explicit 0, false or [].
+# List patterns and wildcard support are policy-specific; see the references.
+# Verify recognition, level, source and errors in chrome://policy after rollout.
+# References for policy names, types, values and benchmark applicability:
+# https://chromeenterprise.google/policies/
+# https://dl.google.com/dl/edgedl/chrome/policy/policy_templates.zip
+# https://www.cisecurity.org/benchmark/google_chrome
+# https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_Google_Chrome_V2R11_STIG.zip
+# These examples cover browser controls relevant to CIS, STIG, privacy and
+# restricted-workstation profiles. Benchmark conformance needs a separate review
+# of the selected benchmark/version, OS controls, browser build and exceptions.
+# Deprecated policies such as SafeBrowsingEnabled, SSLVersionMin,
+# SafeBrowsingExtendedReportingEnabled and ExtensionManifestV2Availability are
+# omitted. AutofillSettings replaces deprecated address/payment Autofill controls.
+# Cloud-only policies (including GenAiDefaultSettings), licensed enterprise
+# connectors/DataControlsRules and Chrome Remote Desktop host policies require
+# separate product configuration; local Chromium JSON cannot supply that service.
+# OriginKeyedProcessesEnabled accepts recommended policies only, so it is also
+# excluded from these mandatory-policy examples.
+#
+# chromium_policies:
+#   # Malware/phishing protection: requires working Safe Browsing in the build.
+#   # 0 = disable Safe Browsing; 1 = standard protection; 2 = enhanced
+#   # protection, which shares additional browsing data with Google.
+#   SafeBrowsingProtectionLevel: 1
+#   # true = prevent bypassing Safe Browsing warnings; false = allow bypassing
+#   # them.
+#   DisableSafeBrowsingProceedAnyway: true
+#   # Domain names exempt from Safe Browsing resource, download and
+#   # password-reuse checks, including subdomains; [] = no exemptions.
+#   SafeBrowsingAllowlistDomains: []
+#   # true = allow proxied real-time URL-hash checks in standard protection;
+#   # false = use less frequent direct checks instead.
+#   SafeBrowsingProxiedRealTimeChecksAllowed: true
+#   # true = allow suspicious-download uploads to Google for malware scanning;
+#   # false = disable these scans, not Enterprise Connector scans.
+#   SafeBrowsingDeepScanningEnabled: true
+#   # true = allow Safe Browsing surveys; false = suppress them.
+#   SafeBrowsingSurveysEnabled: false
+#   # 0 = normal download checks; 1 = block malicious files and dangerous file
+#   # types; 2 = additionally block uncommon/unwanted downloads; 3 = block all
+#   # downloads; 4 = block malicious downloads only. Saving pages and printing
+#   # PDFs are separate.
+#   DownloadRestrictions: 4
+#   # List of objects with file_extension (without the dot) and domains (URL
+#   # patterns) exempt from file-type warnings; [] = no exemptions. Other
+#   # download checks still apply.
+#   ExemptDomainFileTypePairsFromFileTypeDownloadWarnings: []
+#   # true = ask where to save each download; false = use the download directory
+#   # without asking.
+#   PromptForDownloadLocation: true
+#   # 1 = allow multiple automatic downloads; 2 = block them; 3 = ask first.
+#   DefaultAutomaticDownloadsSetting: 2
+#   # URL patterns allowed multiple automatic downloads; [] = no exceptions to
+#   # the default download permission.
+#   AutomaticDownloadsAllowedForUrls: []
+#   # File extensions without a leading dot, such as 'txt', to open after
+#   # download; [] = no policy-driven auto-open types. User rules are separate.
+#   AutoOpenFileTypes: []
+#   # URL patterns limiting policy-driven auto-opening; [] or unset = no URL
+#   # restriction. AutoOpenFileTypes still controls which types auto-open.
+#   AutoOpenAllowedForURLs: []
+#   # true = block new windows/tabs from sites with abusive behavior; false =
+#   # disable that intervention.
+#   AbusiveExperienceInterventionEnforce: true
+#   # 1 = allow ads on all sites; 2 = block ads on sites classified as
+#   # intrusive.
+#   AdsSettingForIntrusiveAdsSites: 2
+#   # Domains exempt from lookalike/spoofing warnings; [] = no exemptions.
+#   LookalikeWarningAllowlistDomains: []
+#
+#   # Keep component security data current; OS packaging handles browser updates.
+#   # true = allow all component updates; false = disable non-critical component
+#   # updates. This does not update the browser package itself.
+#   ComponentUpdatesEnabled: true
+#   # true = allow Google network-time queries; false = disable those timestamp
+#   # queries.
+#   BrowserNetworkTimeQueriesEnabled: true
+#   # true = hide unsupported-OS warnings; false = allow those warnings.
+#   SuppressUnsupportedOSWarning: false
+#   # true = show warnings about dangerous command-line flags; false = hide
+#   # them.
+#   CommandLineFlagSecurityWarningsEnabled: true
+#   # 1 = recommend restarting with dismissible prompts; 2 = require restarting
+#   # after the notification period. Unset = normal update indicators.
+#   RelaunchNotification: 2
+#   # Notification period in milliseconds before a pending-update restart is
+#   # due; 86400000 = 24 hours. Enforcement depends on RelaunchNotification.
+#   RelaunchNotificationPeriod: 86400000
+#   # Age in days of the outdated running release before shortening the restart
+#   # period to two hours; minimum 7. Applies when an update awaits restart.
+#   RelaunchFastIfOutdated: 7
+#
+#   # Process isolation and sandboxing.
+#   # true = enforce isolation between sites; false = keep site isolation
+#   # enabled but allow users to opt out.
+#   SitePerProcess: true
+#   # true = default to origin-keyed agent clusters, restricting
+#   # document.domain; false = default to site-keyed clusters with
+#   # document.domain mutable.
+#   OriginAgentClusterDefaultEnabled: true
+#   # true = sandbox the network service; false = disable its sandbox.
+#   NetworkServiceSandboxEnabled: true
+#   # true = sandbox the audio process; false = disable its sandbox.
+#   AudioSandboxEnabled: true
+#   # true = allow the unsafe software WebGL fallback; false = disable that
+#   # fallback.
+#   EnableUnsafeSwiftShader: false
+#   # true = allow SharedArrayBuffer without cross-origin isolation; false =
+#   # require cross-origin isolation.
+#   SharedArrayBufferUnrestrictedAccessAllowed: false
+#   # Comma-separated origins requiring dedicated processes; isolates these
+#   # origins more narrowly than site-level isolation.
+#   IsolateOrigins: https://sso.example.org,https://payments.example.org
+#
+#   # TLS, trust and authentication: do not bypass certificate errors.
+#   # allowed = users choose HTTPS-only behavior; disallowed = disable it;
+#   # force_enabled = enforce strict mode; force_balanced_enabled = enforce
+#   # balanced mode.
+#   HttpsOnlyMode: force_enabled
+#   # true = attempt automatic HTTP-to-HTTPS upgrades; false = disable these
+#   # upgrades. HttpAllowlist can exempt hosts.
+#   HttpsUpgradesEnabled: true
+#   # Lowercase hostnames/patterns exempt from HTTPS upgrades and HTTPS-only
+#   # warnings; [] = no exemptions. HSTS remains effective; '*' is invalid.
+#   HttpAllowlist: []
+#   # true = allow clicking through certificate-error warnings; false = prevent
+#   # bypass, except origins explicitly allowed below.
+#   SSLErrorOverrideAllowed: false
+#   # Origin patterns permitted to bypass certificate warnings when
+#   # SSLErrorOverrideAllowed is false; [] = no exceptions; '*' is invalid.
+#   SSLErrorOverrideAllowedForOrigins: []
+#   # Single-label hostnames exempt from preloaded HSTS upgrades; [] = no
+#   # exemptions. Does not bypass server-delivered HSTS.
+#   HSTSPolicyBypassList: []
+#   # Qualifying certificate SPKI hashes in sha256/base64-digest format exempt
+#   # from Certificate Transparency enforcement; [] = no exemptions.
+#   CertificateTransparencyEnforcementDisabledForCas: []
+#   # URL hostnames exempt from Certificate Transparency enforcement; [] = no
+#   # exemptions. Only the hostname matters; wildcard hosts are unsupported.
+#   CertificateTransparencyEnforcementDisabledForUrls: []
+#   # Origins or hostname patterns treated as secure despite insecure transport;
+#   # [] = no such exceptions. This does not encrypt their traffic.
+#   OverrideSecurityRestrictionsOnInsecureOrigin: []
+#   # true = allow WebAuthn on sites with invalid TLS certificates; false =
+#   # reject those requests.
+#   AllowWebAuthnWithBrokenTlsCerts: false
+#   # STIG calls for OCSP/CRL checks; Chromium documents limited security benefit.
+#   # true = allow online OCSP/CRL checks; false = disable those online checks,
+#   # not all certificate validation.
+#   EnableOnlineRevocationChecks: true
+#   # Optional private-PKI hard fail: unavailable revocation data breaks access.
+#   # true = require successful revocation checks for locally trusted
+#   # certificate chains; false = use the normal revocation settings.
+#   RequireOnlineRevocationChecksForLocalAnchors: true
+#   # 0 = users may manage all CA certificates; 1 = only user-imported CAs; 2 =
+#   # view CA certificates without managing them.
+#   CACertificateManagementAllowed: 2
+#   # true = import user/enterprise trust from the OS certificate store; false =
+#   # exclude that platform-added trust.
+#   CAPlatformIntegrationEnabled: true
+#   # Base64-encoded TLS certificates added as trusted server-authentication
+#   # CAs; [] = add no trust anchors through this policy.
+#   CACertificates: []
+#   # Objects with certificate (base64) and constraints.permitted_dns_names
+#   # and/or permitted_cidrs; require at least one constraint. [] = no added
+#   # CAs.
+#   CACertificatesWithConstraints: []
+#   # Base64-encoded certificates whose public keys must be distrusted for TLS
+#   # server authentication; [] = no additional distrust entries.
+#   CADistrustedCertificates: []
+#   # JSON-encoded strings containing pattern and filter for client-certificate
+#   # selection; [] = no automatic-selection rules.
+#   AutoSelectCertificateForUrls: []
+#   # true = ask when multiple client certificates match auto-selection; false =
+#   # auto-select when possible and prompt only if none matches.
+#   PromptOnMultipleMatchingCertificates: true
+#   # Keep TLS privacy unless the approved inspection architecture requires more.
+#   # true = allow TLS Encrypted ClientHello where supported; false = disable
+#   # it.
+#   EncryptedClientHelloEnabled: true
+#   # true = enable TLS 1.3 early data (0-RTT); false = disable early data.
+#   TLS13EarlyDataEnabled: false
+#   # Optional CNSA preferences; defaults are secure. These affect performance
+#   # and do not enforce negotiated algorithms or establish CNSA compliance.
+#   # default = normal TLS 1.3 cipher preference; cnsa = prefer CNSA 1.0/2.0
+#   # ciphers. Preference does not guarantee the negotiated cipher.
+#   PreferSlowCiphers: cnsa
+#   # default = normal TLS 1.3 key-exchange preference; cnsa2 = prefer CNSA 2.0
+#   # methods. Preference does not enforce the negotiated method.
+#   PreferSlowKexAlgorithms: cnsa2
+#   # Comma-separated HTTP authentication methods: basic, digest, ntlm,
+#   # negotiate. 'negotiate' enables integrated authentication.
+#   AuthSchemes: negotiate
+#   # true = permit Basic authentication over unencrypted HTTP; false = require
+#   # HTTPS for Basic authentication.
+#   BasicAuthOverHttpEnabled: false
+#   # Comma-separated server names allowed integrated authentication; '*'
+#   # wildcards are supported. Proxy authentication is handled separately.
+#   AuthServerAllowlist: sso.example.org
+#   # Comma-separated servers allowed delegated credentials, with optional '*'
+#   # wildcards; an empty string allows no delegation targets.
+#   AuthNegotiateDelegateAllowlist: ""
+#   # true = additionally require the Kerberos KDC's delegation approval; false
+#   # = rely on AuthNegotiateDelegateAllowlist alone on Linux.
+#   AuthNegotiateDelegateByKdcPolicy: true
+#   # true = allow authentication prompts from third-party images; false =
+#   # suppress those prompts.
+#   AllowCrossOriginAuthPrompt: false
+#   # Origin patterns allowed every supported HTTP auth scheme despite
+#   # AuthSchemes; [] = no exceptions. In M157 this can also affect matching
+#   # proxies unless their separate policy is set.
+#   AllHttpAuthSchemesAllowedForOrigins: []
+#   # Proxy patterns allowed every supported HTTP auth scheme despite
+#   # AuthSchemes; [] = no proxy exceptions.
+#   AllHttpAuthSchemesAllowedForProxies: []
+#   # true = reuse HTTP server credentials across sites; false = scope the cache
+#   # by top-level site. Proxy credentials remain shared.
+#   GloballyScopeHTTPAuthCacheEnabled: false
+#   # 0 = automatic credentials in regular sessions only; 1 = regular +
+#   # incognito; 2 = regular + guest; 3 = all three session types.
+#   AmbientAuthenticationInPrivateModesEnabled: 0
+#   # Applies if NTLM is included in AuthSchemes.
+#   # true = use NTLMv2 when NTLM authentication is permitted; false = disable
+#   # NTLMv2 for legacy compatibility, reducing security.
+#   NtlmV2Enabled: true
+#   # WebAuthn relying-party IDs allowed security-key attestation without
+#   # prompting; [] = no prompt exemptions.
+#   SecurityKeyPermitAttestation: []
+#   # HTTPS origins of remote-desktop clients allowed WebAuthn requests for
+#   # remote relying parties; [] = none. No wildcards; affiliated users only.
+#   WebAuthenticationRemoteDesktopAllowedOrigins: []
+#
+#   # Extension governance: approved extensions need explicit per-ID entries.
+#   # ExtensionSettings supersedes overlapping ExtensionInstallBlocklist,
+#   # ExtensionInstallAllowlist/Forcelist/Sources and ExtensionAllowedTypes rules.
+#   # Per-ID entries do not inherit permission/runtime restrictions from '*'.
+#   # Map extension IDs/update URLs to management rules; '*' supplies default
+#   # rules for extensions without their own configuration.
+#   ExtensionSettings:
+#     # '*' = fallback rules; replace/add a concrete extension ID for
+#     # per-extension configuration.
+#     '*':
+#       # blocked = prevent installation; allowed = permit it; removed =
+#       # uninstall and prevent installation. Per-ID rules also support
+#       # force_installed = auto-install without user removal, and
+#       # normal_installed = auto-install but allow users to disable it.
+#       # Both auto-install modes require an update_url and a specific ID.
+#       installation_mode: blocked
+#       # Text shown when an extension installation is blocked.
+#       blocked_install_message: Only extensions approved by the organization are permitted.
+#       # Extension categories permitted for installation; extension = ordinary
+#       # browser extensions, excluding themes/apps.
+#       allowed_types:
+#         - extension
+#       # Required permissions on this list prevent installation/use; optional
+#       # requests are denied. debugger = debugging API access;
+#       # nativeMessaging = communication with native host programs.
+#       blocked_permissions:
+#         - debugger
+#         - nativeMessaging
+#       # Extension match patterns where page interaction is blocked; this
+#       # example covers the SSO host over HTTP/HTTPS.
+#       runtime_blocked_hosts:
+#         - '*://sso.example.org'
+#   # true = block externally installed extensions; false = permit external
+#   # installation, subject to other extension policies.
+#   BlockExternalExtensions: true
+#   # 0 = allow Developer Mode on chrome://extensions; 1 = prevent enabling it.
+#   ExtensionDeveloperModeSettings: 1
+#   # Installation methods to block; 'command_line' blocks loading extensions
+#   # through command-line flags; [] = no methods blocked here.
+#   ExtensionInstallTypeBlocklist:
+#     - command_line
+#   # 0 = allow extensions unpublished from the Chrome Web Store; 1 = disable
+#   # them. Self-hosted, unpacked and version-pinned extensions are excluded.
+#   ExtensionUnpublishedAvailability: 1
+#   # Native messaging restrictions can break smart-card/password-manager tools.
+#   # Native messaging host names to block; '*' = block all except names in
+#   # NativeMessagingAllowlist; [] = no hosts blocked here.
+#   NativeMessagingBlocklist:
+#     - '*'
+#   # Native messaging host names exempt from the blocklist; [] = no exemptions.
+#   NativeMessagingAllowlist: []
+#   # true = permit user- and system-installed native hosts; false = permit only
+#   # system-installed hosts.
+#   NativeMessagingUserLevelHosts: false
+#   # true = allow managed/component extensions to query hardware-platform
+#   # details; false = deny that API.
+#   EnterpriseHardwarePlatformAPIEnabled: false
+#   # true = allow users to install web apps; false = prevent user installation.
+#   # Policy-forced web apps are unaffected.
+#   WebAppInstallByUserEnabled: false
+#
+#   # Accounts and credentials: disabling saving does not erase stored secrets.
+#   # true = allow saving new passwords in the built-in manager; false = prevent
+#   # saving them. Existing passwords remain usable.
+#   PasswordManagerEnabled: false
+#   # Applies independently only when password-manager saving remains enabled.
+#   # true = allow saving passkeys in the built-in manager; false = prevent
+#   # saving new passkeys. Existing passkeys remain usable.
+#   PasswordManagerPasskeysEnabled: false
+#   # true = allow password sharing with eligible family members; false =
+#   # disable sending and receiving shared passwords.
+#   PasswordSharingEnabled: false
+#   # true = import saved passwords on first run and allow manual import; false
+#   # = disable first-run and manual browser import.
+#   ImportSavedPasswords: false
+#   # true = import form data on first run; false = do not import it on first
+#   # run. This does not prohibit later manual imports.
+#   ImportAutofillFormData: false
+#   # AutofillSettings needs M154+ and controls saving AND filling these types.
+#   # List of URL-pattern and blocked-data-type rules; blocks both saving and
+#   # filling. Matching rules combine their blocked types; [] = no blocks here.
+#   AutofillSettings:
+#     # Main-frame URL pattern; '*' applies this Autofill rule to every site.
+#     - url_pattern: '*'
+#       # Autofill categories: contact_info, payments, identity_docs, travel,
+#       # shopping; all blocks every category from being saved or filled.
+#       blocked_types:
+#         - all
+#   # true = let sites query whether payment methods are stored; false = report
+#   # that no payment methods are available.
+#   PaymentMethodQueryEnabled: false
+#   # Service-dependent checks; verify availability in the Chromium build.
+#   # true = enable compromised-credential checks; false = disable them.
+#   PasswordLeakDetectionEnabled: true
+#   # true = allow dismissing compromised-password alerts; false = prevent
+#   # dismissal.
+#   PasswordDismissCompromisedAlertEnabled: false
+#   # 0 = disable password-reuse warnings; 1 = warn on reuse on non-allowed
+#   # sites; 2 = warn only on reuse on phishing sites.
+#   PasswordProtectionWarningTrigger: 1
+#   # Enterprise login URLs whose password hashes are captured for reuse
+#   # detection; entries must use HTTP or HTTPS.
+#   PasswordProtectionLoginURLs:
+#     - https://sso.example.org/login
+#   # HTTP(S) URL opened to change a password after a password-protection
+#   # warning.
+#   PasswordProtectionChangePasswordURL: https://sso.example.org/change-password
+#   # Browser sign-in controls Google account integration, not website logins.
+#   # 0 = prohibit browser account sign-in; 1 = allow it; 2 = require it.
+#   # Website sign-ins are separate; forced sign-in needs Linux M145+.
+#   BrowserSignin: 0
+#   # true = disable Chrome Sync; false = allow users to choose whether to sync.
+#   SyncDisabled: true
+#   # true = suggest a separate browser profile when adding a Google web
+#   # account; false = suppress that suggestion. Forced profile separation is
+#   # separate.
+#   SigninInterceptionEnabled: false
+#   # true = allow guest profiles; false = prevent guest profiles.
+#   BrowserGuestModeEnabled: false
+#   # true = require guest profiles exclusively; false = do not force guest
+#   # mode. BrowserGuestModeEnabled still controls guest availability.
+#   BrowserGuestModeEnforced: false
+#   # true = allow creating additional browser profiles; false = prevent
+#   # creating them.
+#   BrowserAddPersonEnabled: false
+#   # 0 = permit incognito windows; 1 = disable incognito; 2 = require
+#   # incognito.
+#   IncognitoModeAvailability: 1
+#
+#   # Local history retention for audit-oriented profiles; not an immutable log.
+#   # true = stop saving browsing history; false = save browsing history.
+#   SavingBrowserHistoryDisabled: false
+#   # true = allow deletion of browsing/download history; false = prevent
+#   # deletion through browser controls, not filesystem access.
+#   AllowDeletingBrowserHistory: false
+#   # true = remove profile data from disk when the session ends; false = keep
+#   # profile data between sessions.
+#   ForceEphemeralProfiles: false
+#   # true = keep background apps/processes running after closing browser
+#   # windows; false = disable background mode.
+#   BackgroundModeEnabled: false
+#   # true = encrypt the browser cache; false = leave cache encryption disabled.
+#   CacheEncryptionEnabled: true
+#   # true = permit caching no-store pages for back/forward navigation; false =
+#   # exclude those pages from that cache.
+#   AllowBackForwardCacheForCacheControlNoStorePageEnabled: false
+#   # Optional session cleanup: removes cookies/cache without clearing history.
+#   # Cookie deletion does not necessarily sign out the browser's Google account.
+#   # Data categories deleted when all browser windows close; here cookies/site
+#   # data and cached files. [] = no cleanup categories through this policy.
+#   ClearBrowsingDataOnExitList:
+#     - cookies_and_other_site_data
+#     - cached_images_and_files
+#   # List of data_types and time_to_live_in_hours rules for periodic deletion
+#   # of expired data; [] = no retention rules through this policy.
+#   BrowsingDataLifetime:
+#     # Data categories affected by this retention rule; cached_images_and_files
+#     # means cached web resources, not downloaded user files.
+#     - data_types:
+#         - cached_images_and_files
+#       # Maximum data age in hours; minimum 1; 24 = one day. Expired data is
+#       # removed periodically, not immediately at the deadline.
+#       time_to_live_in_hours: 24
+#   # Shared-workstation timeout in minutes; closes windows and may lose work.
+#   # Minutes without OS-detected user input before running IdleTimeoutActions;
+#   # minimum 1. No actions run unless the action list is configured.
+#   IdleTimeout: 15
+#   # Actions after IdleTimeout: close_browsers closes this profile's
+#   # windows/PWAs; the clear_* entries delete the named data. [] = no idle
+#   # actions.
+#   IdleTimeoutActions:
+#     - close_browsers
+#     - clear_cookies_and_other_site_data
+#     - clear_cached_images_and_files
+#
+#   # Web content and permissions: 2 blocks unless a policy-specific exception wins.
+#   # 1 = allow pop-ups; 2 = block pop-ups.
+#   DefaultPopupsSetting: 2
+#   # URL patterns permitted to open pop-ups; [] = no policy exceptions.
+#   PopupsAllowedForUrls: []
+#   # 1 = allow notifications; 2 = block them; 3 = ask for permission.
+#   DefaultNotificationsSetting: 2
+#   # URL patterns permitted to show desktop notifications; [] = no policy
+#   # exceptions.
+#   NotificationsAllowedForUrls: []
+#   # 1 = allow location access; 2 = block it; 3 = ask for permission.
+#   DefaultGeolocationSetting: 2
+#   # URL patterns granted precise location without prompting; [] = no automatic
+#   # grants.
+#   PreciseGeolocationAllowedForUrls: []
+#   # 1 = allow sensor access; 2 = block it; 3 = ask for permission.
+#   DefaultSensorsSetting: 2
+#   # URL patterns allowed motion/light sensor access; [] = no policy
+#   # exceptions.
+#   SensorsAllowedForUrls: []
+#   # 1 = allow detecting user inactivity; 2 = block it; 3 = ask for permission.
+#   DefaultIdleDetectionSetting: 2
+#   # Origin patterns granted idle detection without prompting; [] = no
+#   # automatic grants.
+#   IdleDetectionAllowedForUrls: []
+#   # 2 = block local-font access; 3 = let sites ask for permission. There is no
+#   # allow-all value 1.
+#   DefaultLocalFontsSetting: 2
+#   # Origin patterns granted access to locally installed fonts; [] = no
+#   # automatic grants.
+#   LocalFontsAllowedForUrls: []
+#   # 2 = block screen/window-management permission; 3 = let sites ask for it.
+#   DefaultWindowManagementSetting: 2
+#   # Origin patterns granted screen information and window-placement
+#   # permission; [] = no automatic grants.
+#   WindowManagementAllowedForUrls: []
+#   # Origin patterns allowed fullscreen without a prior user gesture; [] = no
+#   # policy grants. User-configured permissions remain separate.
+#   AutomaticFullscreenAllowedForUrls: []
+#   # 2 = prohibit mixed-content exceptions; 3 = let users allow HTTP content on
+#   # HTTPS pages for selected sites.
+#   DefaultInsecureContentSetting: 2
+#   # URL patterns allowed active mixed content and exempt from passive
+#   # mixed-content upgrades; [] = no policy exceptions.
+#   InsecureContentAllowedForUrls: []
+#   # 1 = allow cookies/site data; 2 = block them; 4 = retain cookies only for
+#   # the session.
+#   DefaultCookiesSetting: 4
+#   # true = block third-party cookies; false = allow them in regular sessions.
+#   # Site exceptions and incognito rules still apply.
+#   BlockThirdPartyCookies: true
+#   # Cookie permission patterns, optionally 'embedded-site,top-level-site'; []
+#   # = no policy grants. Can exempt sites from third-party-cookie blocking.
+#   CookiesAllowedForUrls: []
+#   # URL patterns denied cookies; [] = no site-specific blocks. Avoid
+#   # conflicting entries in the other cookie lists; '*' alone is invalid.
+#   CookiesBlockedForUrls:
+#     - https://[*.]tracking.example.org
+#   # URL patterns whose cookies last only for the session; [] = no
+#   # site-specific session rules. Session restoration can preserve these
+#   # cookies.
+#   CookiesSessionOnlyForUrls:
+#     - https://[*.]example.org
+#   # 2 = deny clipboard site permission; 3 = let sites ask. User-initiated
+#   # keyboard copy/paste is not completely blocked by this setting.
+#   DefaultClipboardSetting: 2
+#   # URL patterns granted clipboard site permission; [] = no automatic grants.
+#   ClipboardAllowedForUrls: []
+#   # 2 = block File System API read requests; 3 = let sites ask for read
+#   # access.
+#   DefaultFileSystemReadGuardSetting: 2
+#   # URL patterns allowed to ask for file/directory read access; [] = no
+#   # exceptions. Listing a site does not grant access without consent.
+#   FileSystemReadAskForUrls: []
+#   # 2 = block file/directory write-access requests; 3 = let sites ask for
+#   # write access.
+#   DefaultFileSystemWriteGuardSetting: 2
+#   # URL patterns allowed to ask for file/directory write access; [] = no
+#   # exceptions. Listing a site does not grant access without consent.
+#   FileSystemWriteAskForUrls: []
+#   # 2 = block Web Bluetooth device requests; 3 = let sites ask for device
+#   # access.
+#   DefaultWebBluetoothGuardSetting: 2
+#   # 2 = block WebUSB device requests; 3 = let sites ask for device access.
+#   DefaultWebUsbGuardSetting: 2
+#   # URL patterns allowed to ask for USB access; [] = no exceptions or
+#   # automatic grants.
+#   WebUsbAskForUrls: []
+#   # Automatic USB grants: objects with urls and devices containing
+#   # vendor_id/product_id; omitted IDs broaden matching. [] = no automatic
+#   # grants.
+#   WebUsbAllowDevicesForUrls: []
+#   # 2 = block WebHID device requests; 3 = let sites ask for device access.
+#   DefaultWebHidGuardSetting: 2
+#   # URL patterns allowed to ask for HID access; [] = no exceptions or
+#   # automatic grants.
+#   WebHidAskForUrls: []
+#   # Automatic HID grants: objects with urls and devices containing vendor_id
+#   # and optional product_id; [] = no automatic grants.
+#   WebHidAllowDevicesForUrls: []
+#   # Origins automatically granted access to all available HID devices; [] = no
+#   # automatic grants.
+#   WebHidAllowAllDevicesForUrls: []
+#   # Automatic HID grants: objects with urls and usages containing usage_page
+#   # and optional usage; [] = no automatic grants.
+#   WebHidAllowDevicesWithHidUsagesForUrls: []
+#   # 2 = block serial-port requests; 3 = let sites ask for port access.
+#   DefaultSerialGuardSetting: 2
+#   # URL patterns allowed to ask for serial-port access; [] = no exceptions or
+#   # automatic grants.
+#   SerialAskForUrls: []
+#   # Automatic Web Serial grants: objects with urls and devices containing
+#   # vendor_id and optional product_id; [] = no automatic grants.
+#   SerialAllowUsbDevicesForUrls: []
+#   # Origins automatically granted all available serial ports; [] = no
+#   # automatic grants.
+#   SerialAllowAllPortsForUrls: []
+#
+#   # Restricted terminals: breaks many applications; allow approved sites only.
+#   # 1 = allow JavaScript; 2 = block JavaScript, except permitted sites.
+#   DefaultJavaScriptSetting: 2
+#   # URL patterns permitted to run JavaScript; [] = no exceptions to the
+#   # default.
+#   JavaScriptAllowedForUrls:
+#     - https://[*.]example.org
+#   # JIT disabling also affects WebAssembly and performance; test workloads.
+#   # 1 = allow JavaScript just-in-time compilation; 2 = disable JIT, subject to
+#   # site exceptions.
+#   DefaultJavaScriptJitSetting: 2
+#   # Site patterns permitted to use JavaScript JIT; [] = no policy exceptions.
+#   JavaScriptJitAllowedForSites: []
+#   # 1 = enable advanced JavaScript optimizations; 2 = disable them, subject to
+#   # site exceptions.
+#   DefaultJavaScriptOptimizerSetting: 2
+#   # Site patterns permitted advanced JavaScript optimizations; [] = no policy
+#   # exceptions.
+#   JavaScriptOptimizerAllowedForSites: []
+#   # true = require JavaScript MIME types for worker scripts; false = accept
+#   # legacy MIME types such as text/ascii.
+#   StrictMimetypeCheckForWorkerScriptsEnabled: true
+#   # true = permit data: URLs in SVG use elements; false = disable that
+#   # support.
+#   DataUrlInSvgUseEnabled: false
+#   # true = disable 3D graphics APIs; false = allow them.
+#   Disable3DAPIs: true
+#   # Built-in PDF viewer avoids handing documents to external applications.
+#   # true = use an external PDF application; false = use the built-in PDF
+#   # viewer.
+#   AlwaysOpenPdfExternally: false
+#   # Domains allowed file:// access through the PDF viewer; [] = no domains
+#   # granted access.
+#   PdfLocalFileAccessAllowedForDomains: []
+#   # Development/automation restrictions are inappropriate for developer hosts.
+#   # 0 = prohibit DevTools for enterprise-installed extensions/apps and managed
+#   # built-in extensions, allow elsewhere; 1 = allow DevTools; 2 = prohibit
+#   # DevTools everywhere.
+#   DeveloperToolsAvailability: 2
+#   # true = permit remote debugging; false = disable remote debugging
+#   # interfaces.
+#   RemoteDebuggingAllowed: false
+#   # 1 = allow running without a browser UI; 2 = prohibit headless mode.
+#   HeadlessMode: 2
+#   # Explicit URL rules also cover view-source, which DevTools policy cannot.
+#   # URL patterns blocked from navigation; these examples block
+#   # address-bar/bookmarklet JavaScript and view-source. '*' blocks all; []
+#   # blocks nothing here. Does not filter every subresource request.
+#   URLBlocklist:
+#     - 'javascript://*'
+#     - 'view-source:*'
+#   # URL patterns exempt from URLBlocklist, subject to matching specificity; []
+#   # = no exceptions.
+#   URLAllowlist: []
+#   # For kiosk allowlisting use URLBlocklist: ['*'] plus approved URLAllowlist.
+#   # URL opened by the Home button when HomepageIsNewTabPage is false. Does not
+#   # configure startup pages.
+#   HomepageLocation: https://intranet.example.org/
+#   # true = use the New Tab Page as home; false = use the configured homepage
+#   # URL.
+#   HomepageIsNewTabPage: false
+#   # true = let users remember permission to launch external protocols; false =
+#   # remove that checkbox. Policy-granted exceptions remain separate.
+#   ExternalProtocolDialogShowAlwaysOpenCheckbox: false
+#   # Objects with protocol (without ':') and allowed_origins patterns permitted
+#   # to launch external apps without prompting; [] = no policy exemptions.
+#   AutoLaunchProtocolsFromOrigins: []
+#   # true = enforce external-protocol restrictions in sandboxed iframes; false
+#   # = bypass those restrictions.
+#   SandboxExternalProtocolBlocked: true
+#   # Blocks file pickers for uploads/downloads; not a complete data-loss control.
+#   # true = permit file pickers; false = cancel file-picker actions, affecting
+#   # uploads, imports and saving files.
+#   AllowFileSelectionDialogs: false
+#   # Origin patterns allowed file/directory pickers without prior user
+#   # interaction; [] = no exemptions; '*' is invalid.
+#   FileOrDirectoryPickerWithoutGestureAllowedForOrigins: []
+#   # true = suppress JavaScript dialogs from cross-origin subframes; false =
+#   # permit them.
+#   SuppressDifferentOriginSubframeDialogs: true
+#
+#   # Capture/output restrictions: conferencing and document workflows need review.
+#   # true = let sites request audio input; false = block audio input except
+#   # AudioCaptureAllowedUrls grants.
+#   AudioCaptureAllowed: false
+#   # Origin patterns granted audio input without prompting; [] = no automatic
+#   # grants; '*' is invalid.
+#   AudioCaptureAllowedUrls: []
+#   # true = let sites request camera/video input; false = block it except
+#   # VideoCaptureAllowedUrls grants.
+#   VideoCaptureAllowed: false
+#   # Origin patterns granted video input without prompting; [] = no automatic
+#   # grants; '*' is invalid.
+#   VideoCaptureAllowedUrls: []
+#   # true = let sites request screen-sharing permission; false = block requests
+#   # except origin-based capture policies.
+#   ScreenCaptureAllowed: false
+#   # Origin patterns allowed desktop/window/tab capture despite the global
+#   # setting; [] = no override here. Narrower capture policies take precedence.
+#   ScreenCaptureAllowedByOrigins: []
+#   # Origin patterns limited to window/tab capture; [] = no override here.
+#   # Tab-only and same-origin policies take precedence.
+#   WindowCaptureAllowedByOrigins: []
+#   # Origin patterns limited to tab capture (and windowed Chrome apps); [] = no
+#   # override here. Same-origin capture rules take precedence.
+#   TabCaptureAllowedByOrigins: []
+#   # Origin patterns limited to capture of same-origin tabs/apps; [] = no
+#   # override here. Takes precedence over broader capture rules.
+#   SameOriginTabCaptureAllowedByOrigins: []
+#   # Origin patterns allowed to request display capture without prior user
+#   # interaction; [] = no exemptions. Does not silently grant capture
+#   # permission.
+#   ScreenCaptureWithoutGestureAllowedForOrigins: []
+#   # true = block browser-controlled screenshots/recordings; false = allow
+#   # them. Does not control Linux screenshot tools.
+#   DisableScreenshots: true
+#   # true = allow browser printing; false = disable browser printing.
+#   PrintingEnabled: false
+#   # true = print to the default printer without the preview dialog; false =
+#   # retain the normal printing UI.
+#   SilentPrintingEnabled: false
+#   # true = enable Google Cast; false = disable Cast.
+#   EnableMediaRouter: false
+#   # true = allow selecting Cast devices by access/QR code; false = hide that
+#   # selection method.
+#   AccessCodeCastEnabled: false
+#   # true = allow Cast connections to any IP address; false = restrict Cast to
+#   # private IP addresses.
+#   MediaRouterCastAllowAllIPs: false
+#   # true = permit automatic media playback; false = block it except
+#   # AutoplayAllowlist matches.
+#   AutoplayAllowed: false
+#   # URL patterns permitted media autoplay with sound; [] = no exceptions.
+#   # Irrelevant when AutoplayAllowed is true.
+#   AutoplayAllowlist: []
+#   # true = show the desktop sharing hub; false = hide it.
+#   DesktopSharingHubEnabled: false
+#   # true = allow generating QR codes for links; false = disable that feature.
+#   QRCodeGeneratorEnabled: false
+#
+#   # Managed networking: use an organization-approved proxy/DNS architecture.
+#   # Object selecting the managed proxy configuration; ProxyMode determines
+#   # which additional proxy fields are used.
+#   ProxySettings:
+#     # system = OS proxy settings; direct = no proxy; auto_detect = discover a
+#     # proxy; fixed_servers = use ProxyServer/ProxyBypassList; pac_script = use
+#     # ProxyPacUrl and optional PAC controls.
+#     ProxyMode: system
+#   # off retains system DNS/filtering; secure needs approved DnsOverHttpsTemplates.
+#   # off = disable DNS-over-HTTPS; automatic = use it with ordinary-DNS
+#   # fallback; secure = require it without ordinary-DNS fallback.
+#   DnsOverHttpsMode: 'off'
+#   # true = permit QUIC transport; false = prohibit QUIC.
+#   QuicAllowed: false
+#   # Port numbers as strings exempt from Chromium's restricted-port list; [] =
+#   # no exemptions. Only the version's documented ports can be unblocked.
+#   ExplicitlyAllowedNetworkPorts: []
+#   # Limits direct UDP paths/IP exposure, but can impair audio/video calls.
+#   # default = use all interfaces; default_public_and_private_interfaces =
+#   # public-facing interface, including private addresses;
+#   # default_public_interface_only = public-facing interface without private
+#   # addresses; disable_non_proxied_udp = TCP unless the proxy supports UDP.
+#   WebRtcIPHandling: disable_non_proxied_udp
+#   # Origin patterns allowed real local IPs in WebRTC candidates instead of
+#   # mDNS masking; [] = no policy exceptions.
+#   WebRtcLocalIpsAllowedUrls: []
+#   # true = enable post-quantum key agreement for WebRTC; false = disable it.
+#   WebRtcPostQuantumKeyAgreement: true
+#   # Strict local/loopback network isolation; can break device/SSO integrations.
+#   # Initiating-origin patterns denied local-network/loopback requests; '*' =
+#   # all origins; [] = no blocks here. More specific local/loopback policies
+#   # take precedence.
+#   LocalNetworkAccessBlockedForUrls:
+#     - '*'
+#   # Initiating-origin patterns exempt from Local Network Access checks; [] =
+#   # no exemptions. Block rules and specific local/loopback policies take
+#   # precedence.
+#   LocalNetworkAccessAllowedForUrls: []
+#   # Initiating-origin patterns denied requests to local-network endpoints; '*'
+#   # = all origins; [] = no blocks here. Overrides the local-network allowlist.
+#   LocalNetworkBlockedForUrls:
+#     - '*'
+#   # Initiating-origin patterns exempt from local-network checks; [] = no
+#   # exemptions. Cannot override LocalNetworkBlockedForUrls.
+#   LocalNetworkAllowedForUrls: []
+#   # Initiating-origin patterns denied requests to the local device; '*' = all
+#   # origins; [] = no blocks here. Overrides the loopback allowlist.
+#   LoopbackNetworkBlockedForUrls:
+#     - '*'
+#   # Initiating-origin patterns exempt from loopback checks; [] = no
+#   # exemptions. Cannot override LoopbackNetworkBlockedForUrls.
+#   LoopbackNetworkAllowedForUrls: []
+#   # true = temporarily bypass local-network access restrictions; false = apply
+#   # normal restrictions.
+#   LocalNetworkAccessRestrictionsTemporaryOptOut: false
+#   # true = allow local-network requests in subframes without explicit
+#   # delegation; false = require delegation.
+#   LocalNetworkAccessPermissionsPolicyDefaultEnabled: false
+#   # true = enforce restrictions on service-worker background downloads; false
+#   # = bypass those restrictions.
+#   RestrictBackgroundFetchFromServiceWorkerEnabled: true
+#
+#   # Privacy: disable optional prediction, reporting and cloud-assisted inputs.
+#   # 0 = allow network prediction/preloading; 2 = disable it. Legacy value 1 is
+#   # obsolete and behaves like 0 in current versions.
+#   NetworkPredictionOptions: 2
+#   # true = allow address-bar search suggestions; false = disable them.
+#   SearchSuggestEnabled: false
+#   # true = allow online suggestions for navigation errors; false = use
+#   # standard error pages without that service.
+#   AlternateErrorPagesEnabled: false
+#   # true = send usage/crash telemetry; false = disable that reporting.
+#   MetricsReportingEnabled: false
+#   # true = enable URL-keyed anonymized telemetry; false = disable it.
+#   UrlKeyedAnonymizedDataCollectionEnabled: false
+#   # true = permit reliability reports to Google subject to metrics settings;
+#   # false = never send those reports.
+#   DomainReliabilityAllowed: false
+#   # true = use Google's online spell-check service; false = disable that
+#   # service. Local spell checking is separate.
+#   SpellCheckServiceEnabled: false
+#   # true = offer built-in page translation; false = disable that feature.
+#   TranslateEnabled: false
+#   # true = use Google's service to describe unlabeled images; false = disable
+#   # that service.
+#   AccessibilityImageLabelsEnabled: false
+#   # true = allow submitting browser feedback; false = disable feedback
+#   # submission.
+#   UserFeedbackAllowed: false
+#   # true = permit in-product surveys; false = suppress surveys.
+#   FeedbackSurveysEnabled: false
+#   # true = let Google services collect WebRTC event logs; false = deny that
+#   # collection.
+#   WebRtcEventLogCollectionAllowed: false
+#   # true = let Google services collect WebRTC text logs; false = deny that
+#   # collection.
+#   WebRtcTextLogCollectionAllowed: false
+#   # Origin patterns enabled for WebRTC diagnostic-log collection; [] = no
+#   # origins enabled; '*' is invalid.
+#   WebRtcDiagnosticLogCollectionAllowedForOrigins: []
+#   # Set an approved HTTPS search provider; replace the example before use.
+#   # true = enable the configured default search provider; false = disable
+#   # address-bar default searches.
+#   DefaultSearchProviderEnabled: true
+#   # Display name of the configured default search engine; requires
+#   # DefaultSearchProviderEnabled.
+#   DefaultSearchProviderName: Organization search
+#   # Search URL template; {searchTerms} is replaced with the query. Requires
+#   # DefaultSearchProviderEnabled.
+#   DefaultSearchProviderSearchURL: https://search.example.org/?q={searchTerms}
+#
+#   # Optional acceptable-use filters; these do not replace URL/proxy filtering.
+#   # true = enforce Google SafeSearch; false = do not enforce it.
+#   ForceGoogleSafeSearch: true
+#   # 0 = do not enforce Restricted Mode; 1 = enforce at least moderate
+#   # filtering; 2 = enforce strict filtering.
+#   ForceYouTubeRestrict: 2
+#   # 0 = disable adult-site filtering; 1 = enable adult-site filtering.
+#   SafeSitesFilterBehavior: 1
+#
+#   # AI/data-sharing controls apply where the build provides the named feature.
+#   # Individual policies work locally; GenAiDefaultSettings is cloud-only.
+#   # Disable the local model directly without disabling component security updates.
+#   # 0 = allow automatic local AI-model download/use; 1 = stop downloading it
+#   # and delete an already downloaded model.
+#   GenAILocalFoundationalModelSettings: 1
+#   # true = allow built-in AI APIs for web applications; false = deny those
+#   # APIs.
+#   BuiltInAIAPIsEnabled: false
+#   # true = allow the web Translator API; false = deny it. This is separate
+#   # from the browser's Translate feature.
+#   TranslatorAPIAllowed: false
+#   # 0 = allow AI Mode integrations; 1 = disable those integrations.
+#   AIModeSettings: 1
+#   # 0 = allow third-party AI chat integrations; 1 = disable those
+#   # integrations.
+#   ThirdPartyAiChatSettings: 1
+#   # 0 = allow content sharing with Google AI Mode; 1 = disable that sharing.
+#   SearchContentSharingSettings: 1
+#   # 0 = allow smart tab sharing with Google AI Mode; 1 = disable that sharing.
+#   SmartTabSharingSettings: 1
+#   # 0 = allow Gemini to act on web pages; 1 = prohibit those actions.
+#   GeminiActOnWebSettings: 1
+#   # 0 = allow Gemini Spark to use Chrome auto browse; 1 = prohibit that
+#   # integration.
+#   GeminiSparkSettings: 1
+#   # 0 = allow contextual AI suggestions; 1 = disable those suggestions.
+#   ChromeSuggestionsSettings: 1
+#   # 0 = allow AI themes and use of content for model improvement; 1 = allow AI
+#   # themes without that model improvement; 2 = disable AI themes.
+#   CreateThemesSettings: 2
+#   # 0 = allow DevTools AI and use of content for model improvement; 1 = allow
+#   # DevTools AI without that model improvement; 2 = disable DevTools AI.
+#   DevToolsGenAiSettings: 2
+#   # 0 = allow AI writing assistance and content use for model improvement; 1 =
+#   # allow it without that model improvement; 2 = disable AI writing
+#   # assistance.
+#   HelpMeWriteSettings: 2
+#   # 0 = allow AI history search and content use for model improvement; 1 =
+#   # allow it without that model improvement; 2 = disable AI history search.
+#   HistorySearchSettings: 2
+#   # 0 = allow AI tab comparison and content use for model improvement; 1 =
+#   # allow it without that model improvement; 2 = disable AI tab comparison.
+#   TabCompareSettings: 2
+#   # 0 = allow automated password changes and content use for model
+#   # improvement; 1 = allow them without that model improvement; 2 = disable
+#   # the feature.
+#   AutomatedPasswordChangeSettings: 2
+#   # 0 = allow AI Autofill and content use for model improvement; 1 = allow it
+#   # without that model improvement; 2 = disable AI Autofill.
+#   AutofillGenAiSettings: 2
+#   # 0 = allow AI voice typing and content use for model improvement; 1 = allow
+#   # it without that model improvement; 2 = disable AI voice typing.
+#   VoiceTypingSettings: 2
+#   # 0 = allow virtual clothing try-on and content use for model improvement; 1
+#   # = allow it without that model improvement in Chrome's flow; 2 = disable
+#   # try-on.
+#   TryOnYouSettings: 2
+
+# Absolute policy directory override; null selects the platform default.
+chromium_policy_dir: null

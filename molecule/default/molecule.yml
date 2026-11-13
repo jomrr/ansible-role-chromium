@@ -1,0 +1,74 @@
+---
+# role: chromium
+# file: molecule/default/molecule.yml
+
+dependency:
+  name: "galaxy"
+  options:
+    role-file: "${MOLECULE_PROJECT_DIRECTORY}/collections.yml"
+    requirements-file: "${MOLECULE_PROJECT_DIRECTORY}/collections.yml"
+driver:
+  name: "podman"
+provisioner:
+  name: "ansible"
+  config_options:
+    defaults:
+      forks: 8
+      interpreter_python: "auto_silent"
+      callbacks_enabled: "ansible.posix.profile_tasks,ansible.posix.timer"
+      callback_result_format: "yaml"
+    connection:
+      pipelining: true
+  inventory:
+    group_vars:
+      all:
+        ansible_podman_mount_detection: false
+        chromium_policies:
+          HomepageLocation: "https://intranet.example.org/"
+          HomepageIsNewTabPage: false
+          RestoreOnStartup: 4
+          RestoreOnStartupURLs:
+            - "https://intranet.example.org/"
+            - "https://help.example.org/"
+          ManagedBookmarks:
+            - name: "Documentation \"Grüße\" \\\\ reference"
+              url: "https://docs.example.org/"
+          ExtensionSettings:
+            '*':
+              installation_mode: "blocked"
+        __chromium_expected_policy_dirs:
+          AlmaLinux: "/etc/chromium/policies/managed"
+          Debian: "/etc/chromium/policies/managed"
+          Fedora: "/etc/chromium/policies/managed"
+          openSUSE Leap: "/etc/chromium/policies/managed"
+          openSUSE Tumbleweed: "/etc/chromium/policies/managed"
+          Ubuntu: "/etc/chromium-browser/policies/managed"
+  log: true
+  playbooks:
+    prepare: "../resources/playbooks/prepare.yml"
+    converge: "../resources/playbooks/converge.yml"
+    verify: "../resources/playbooks/verify.yml"
+    side_effect: "../resources/playbooks/side_effect.yml"
+verifier:
+  name: "ansible"
+scenario:
+  test_sequence:
+    - "dependency"
+    - "destroy"
+    - "syntax"
+    - "create"
+    - "prepare"
+    - "check"
+    - "converge"
+    - "idempotence"
+    - "check"
+    - "verify"
+    - "side_effect"
+    - "destroy"
+  name: "default"
+platforms:
+  - name: "chromium"
+    image: "docker.io/${uns:-jomrr}/molecule-${img:-fedora}:${tag:-latest}"
+    pre_build_image: true
+    override_command: false
+    systemd: "true"
