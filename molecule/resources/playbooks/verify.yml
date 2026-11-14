@@ -11,10 +11,10 @@
         src: "{{ __chromium_expected_policy_dirs[ansible_facts.distribution] }}/ansible.json"
       register: __chromium_policy_file
 
-    - name: CHROMIUM | Verify exact JSON values and removal of outdated policies
+    - name: CHROMIUM | Verify default security policies and removal of outdated policies
       ansible.builtin.assert:
         that:
-          - __chromium_policy_file.content | b64decode | from_json == chromium_policies
+          - __chromium_policy_file.content | b64decode | from_json == __chromium_expected_defaults
         quiet: true
 
     - name: CHROMIUM | Inspect policy access permissions

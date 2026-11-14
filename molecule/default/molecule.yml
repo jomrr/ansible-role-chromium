@@ -23,7 +23,16 @@ provisioner:
     group_vars:
       all:
         ansible_podman_mount_detection: false
-        chromium_policies:
+        __chromium_expected_defaults:
+          SitePerProcess: true
+          NetworkServiceSandboxEnabled: true
+          AudioSandboxEnabled: true
+          HttpsUpgradesEnabled: true
+          ComponentUpdatesEnabled: true
+          CommandLineFlagSecurityWarningsEnabled: true
+          SuppressUnsupportedOSWarning: false
+          PasswordManagerEnabled: false
+        __chromium_test_policies:
           HomepageLocation: "https://intranet.example.org/"
           HomepageIsNewTabPage: false
           RestoreOnStartup: 4

@@ -8,11 +8,21 @@ argument_specs:
     options:
       chromium_policies:
         type: dict
-        default: {}
+        default:
+          SitePerProcess: true
+          NetworkServiceSandboxEnabled: true
+          AudioSandboxEnabled: true
+          HttpsUpgradesEnabled: true
+          ComponentUpdatesEnabled: true
+          CommandLineFlagSecurityWarningsEnabled: true
+          SuppressUnsupportedOSWarning: false
+          PasswordManagerEnabled: false
         description:
           - Chromium policy names mapped to their JSON-compatible values.
-          - The dictionary replaces the contents of ansible.json; an empty dictionary clears
-            its policies.
+          - Defaults enforce isolation, sandboxes, HTTPS upgrades, component updates and
+            warnings, and disable saving passwords and passkeys.
+          - The resolved dictionary replaces ansible.json; with Ansible's default hash_behaviour=replace,
+            an empty dictionary clears its policies.
           - Other policy files are preserved.
       chromium_policy_dir:
         type: path

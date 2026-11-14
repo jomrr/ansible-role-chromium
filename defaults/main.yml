@@ -3,7 +3,26 @@
 # file: defaults/main.yml
 
 # Mandatory Chromium policies written as a complete JSON object.
-chromium_policies: {}
+chromium_policies:
+  # true = enforce a separate process for each site, preventing isolation opt-out.
+  SitePerProcess: true
+  # true = run the network service in its sandbox.
+  NetworkServiceSandboxEnabled: true
+  # true = run the audio service in its sandbox.
+  AudioSandboxEnabled: true
+  # true = try HTTPS upgrades automatically, retaining HTTP fallback.
+  HttpsUpgradesEnabled: true
+  # true = allow component updates; this does not update the browser package.
+  ComponentUpdatesEnabled: true
+  # true = show warnings for command-line flags that weaken browser security.
+  CommandLineFlagSecurityWarningsEnabled: true
+  # false = show the warning when the operating system is unsupported.
+  SuppressUnsupportedOSWarning: false
+  # false = prevent saving new passwords and passkeys in the built-in manager;
+  # previously saved credentials remain usable and are not deleted.
+  PasswordManagerEnabled: false
+# Under Ansible's default hash_behaviour=replace, a supplied dictionary replaces
+# these defaults entirely; {} clears the policies managed by this role.
 # Security policy examples, reviewed against Linux Chromium 157.0.8103.78 and
 # Google's policy templates 157.0.8103.79. Select settings for the deployment;
 # the restrictive sections can disable applications and are not enabled here.

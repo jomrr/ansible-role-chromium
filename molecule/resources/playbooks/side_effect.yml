@@ -2,7 +2,7 @@
 # role: chromium
 # file: molecule/resources/playbooks/side_effect.yml
 
-- name: CHROMIUM | Verify clearing policies and overriding the policy directory
+- name: CHROMIUM | Verify clearing defaults and overriding policies and their directory
   hosts: all
   gather_facts: true
   tasks:
@@ -27,6 +27,7 @@
       ansible.builtin.include_role:
         name: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}"
       vars:
+        chromium_policies: "{{ __chromium_test_policies }}"
         chromium_policy_dir: /etc/chromium-custom/policies/managed
 
     - name: CHROMIUM | Read policies from the overridden directory
@@ -34,8 +35,8 @@
         src: /etc/chromium-custom/policies/managed/ansible.json
       register: __chromium_custom
 
-    - name: CHROMIUM | Verify policies were written to the overridden directory
+    - name: CHROMIUM | Verify custom policies replace defaults in the overridden directory
       ansible.builtin.assert:
         that:
-          - __chromium_custom.content | b64decode | from_json == chromium_policies
+          - __chromium_custom.content | b64decode | from_json == __chromium_test_policies
         quiet: true

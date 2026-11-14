@@ -12,9 +12,14 @@ Ansible role for configuring system-wide Chromium browser policies.
 
 Configure Chromium for all users through a system-wide JSON policy file.
 Policy values support booleans, numbers, strings, lists and nested dictionaries.
-The role replaces its file with exactly the supplied policies; applying the
-same inputs again is idempotent. An empty dictionary writes an empty JSON
-object, clearing policies previously supplied through this file.
+Defaults enforce site isolation, network and audio sandboxes, automatic HTTPS
+upgrades, component updates and security warnings. Saving new passwords and
+passkeys in the built-in password manager is disabled.
+The role replaces its file with the resolved policy dictionary; applying the
+same inputs again is idempotent. With Ansible's default
+`hash_behaviour=replace`,
+a supplied `chromium_policies` dictionary replaces all role defaults, and `{}`
+writes an empty JSON object, clearing policies supplied through this file.
 
 ## Scope
 
@@ -51,14 +56,24 @@ collections:
 Type: `dict`. Required: `false`.
 
 Chromium policy names mapped to their JSON-compatible values.
-The dictionary replaces the contents of ansible.json; an empty dictionary clears
-its policies.
+Defaults enforce isolation, sandboxes, HTTPS upgrades, component updates and
+warnings, and disable saving passwords and passkeys.
+The resolved dictionary replaces ansible.json; with Ansible's default
+hash_behaviour=replace, an empty dictionary clears its policies.
 Other policy files are preserved.
 
 Default:
 
 ```yaml
-chromium_policies: {}
+chromium_policies:
+  SitePerProcess: true
+  NetworkServiceSandboxEnabled: true
+  AudioSandboxEnabled: true
+  HttpsUpgradesEnabled: true
+  ComponentUpdatesEnabled: true
+  CommandLineFlagSecurityWarningsEnabled: true
+  SuppressUnsupportedOSWarning: false
+  PasswordManagerEnabled: false
 ```
 
 ### `chromium_policy_dir`
@@ -97,9 +112,17 @@ policies there; policies without dynamic refresh require a browser restart.
 - The policy directory is owned by root with mode 0755; ansible.json is owned by
   root with mode 0644.
 - Policy values are readable by all local users and must not contain secrets.
+- PasswordManagerEnabled=false prevents saving new passwords and passkeys in the
+  built-in manager. Previously saved credentials remain available and are not
+  deleted. External password managers are unaffected by this policy.
+- Automatic HTTPS upgrades retain HTTP fallback; component updates do not update
+  the browser package. The defaults do not establish CIS or STIG compliance.
 
 ## Operational Notes
 
+- Custom policy dictionaries must include any defaults that should remain
+  enforced. With hash_behaviour=merge, Ansible merges dictionaries instead; an
+  empty dictionary then does not clear the defaults.
 - Set chromium_policy_dir to the absolute managed-policy directory of a
   differently packaged Chromium build. Changing it leaves the previous file in
   place; remove that file explicitly when migrating paths.
@@ -122,9 +145,22 @@ policies there; policies without dynamic refresh require a browser restart.
 
 ## Example Playbook
 
+### Apply the default security policies
+
+Apply the role defaults, including disabled password and passkey saving.
+
+```yaml
+---
+- name: Configure Chromium defaults
+  hosts: workstations
+  gather_facts: true
+  roles:
+    - role: jomrr.chromium
+```
+
 ### Configure mandatory browser policies
 
-Enforce a homepage, startup URLs and password-manager settings for all users.
+Replace defaults with a homepage, startup URLs and password-manager settings.
 
 ```yaml
 ---
